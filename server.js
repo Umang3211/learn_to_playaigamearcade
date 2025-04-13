@@ -1,11 +1,24 @@
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-// In-memory storage
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  directConnection: true, // Try direct connection instead of DNS SRV
+})
+  .then(() => console.log('MongoDB connected successfully'))
+  .catch(err => console.log('MongoDB connection error:', err));
+
+// Load models
+const User = require('./models/User');
+
+// In-memory fallback storage (if database connection fails)
 const users = {};
 const gameProgress = {};
 
@@ -94,68 +107,131 @@ const QUESTIONS = {
 };
 
 // Routes
-app.post('/api/users', (req, res) => {
+app.post('/api/users', async (req, res) => {
   const { username, gradeLevel, subject = 'Math' } = req.body;
   
-  if (users[username]) {
-    return res.json(users[username]);
-  }
-  
-  const user = {
-    username,
-    gradeLevel,
-    subject,
-    gameProgress: {
-      ticTacToe: { wins: 0, losses: 0, questionsAnswered: 0, correctAnswers: 0 },
-      connectFour: { wins: 0, losses: 0, questionsAnswered: 0, correctAnswers: 0 },
-      geometryRunner: { highScore: 0, questionsAnswered: 0, correctAnswers: 0 }
+  try {
+    // Check if user exists in database
+    let user = await User.findOne({ username });
+    
+    if (user) {
+      return res.json(user);
     }
-  };
-  
-  users[username] = user;
-  gameProgress[username] = user.gameProgress;
-  
-  res.status(201).json(user);
+    
+    // Create new user if not found
+    user = new User({
+      username,
+      gradeLevel,
+      subject,
+      progress: {
+        ticTacToe: { wins: 0, losses: 0, questionsAnswered: 0, correctAnswers: 0 },
+        connectFour: { wins: 0, losses: 0, questionsAnswered: 0, correctAnswers: 0 },
+        geometryRunner: { highScore: 0, questionsAnswered: 0, correctAnswers: 0 }
+      }
+    });
+    
+    await user.save();
+    res.status(201).json(user);
+  } catch (error) {
+    console.error('Error creating user:', error);
+    
+    // Fallback to in-memory storage if database fails
+    if (users[username]) {
+      return res.json(users[username]);
+    }
+    
+    const user = {
+      username,
+      gradeLevel,
+      subject,
+      gameProgress: {
+        ticTacToe: { wins: 0, losses: 0, questionsAnswered: 0, correctAnswers: 0 },
+        connectFour: { wins: 0, losses: 0, questionsAnswered: 0, correctAnswers: 0 },
+        geometryRunner: { highScore: 0, questionsAnswered: 0, correctAnswers: 0 }
+      }
+    };
+    
+    users[username] = user;
+    gameProgress[username] = user.gameProgress;
+    
+    res.status(201).json(user);
+  }
 });
 
-app.put('/api/users/:username/progress', (req, res) => {
+app.put('/api/users/:username/progress', async (req, res) => {
   const { username } = req.params;
   const { gameType, progress } = req.body;
   
-  if (!gameProgress[username]) {
-    gameProgress[username] = {
-      ticTacToe: { wins: 0, losses: 0, questionsAnswered: 0, correctAnswers: 0 },
-      connectFour: { wins: 0, losses: 0, questionsAnswered: 0, correctAnswers: 0 },
-      geometryRunner: { highScore: 0, questionsAnswered: 0, correctAnswers: 0 }
+  try {
+    // Find and update user in database
+    const user = await User.findOne({ username });
+    
+    if (user) {
+      user.progress[gameType] = {
+        ...user.progress[gameType],
+        ...progress
+      };
+      
+      await user.save();
+      return res.json(user.progress[gameType]);
+    }
+    
+    // If user not found in database, create new progress
+    throw new Error('User not found in database');
+  } catch (error) {
+    console.error('Error updating progress:', error);
+    
+    // Fallback to in-memory storage
+    if (!gameProgress[username]) {
+      gameProgress[username] = {
+        ticTacToe: { wins: 0, losses: 0, questionsAnswered: 0, correctAnswers: 0 },
+        connectFour: { wins: 0, losses: 0, questionsAnswered: 0, correctAnswers: 0 },
+        geometryRunner: { highScore: 0, questionsAnswered: 0, correctAnswers: 0 }
+      };
+    }
+    
+    gameProgress[username][gameType] = {
+      ...gameProgress[username][gameType],
+      ...progress
     };
+    
+    res.json(gameProgress[username][gameType]);
   }
-  
-  gameProgress[username][gameType] = {
-    ...gameProgress[username][gameType],
-    ...progress
-  };
-  
-  res.json(gameProgress[username][gameType]);
 });
 
-app.get('/api/users/:username/progress', (req, res) => {
+app.get('/api/users/:username/progress', async (req, res) => {
   const { username } = req.params;
   
-  if (!gameProgress[username]) {
-    gameProgress[username] = {
-      ticTacToe: { wins: 0, losses: 0, questionsAnswered: 0, correctAnswers: 0 },
-      connectFour: { wins: 0, losses: 0, questionsAnswered: 0, correctAnswers: 0 },
-      geometryRunner: { highScore: 0, questionsAnswered: 0, correctAnswers: 0 }
-    };
+  try {
+    // Find user in database
+    const user = await User.findOne({ username });
+    
+    if (user) {
+      return res.json(user.progress);
+    }
+    
+    // If user not found in database
+    throw new Error('User not found in database');
+  } catch (error) {
+    console.error('Error fetching progress:', error);
+    
+    // Fallback to in-memory storage
+    if (!gameProgress[username]) {
+      gameProgress[username] = {
+        ticTacToe: { wins: 0, losses: 0, questionsAnswered: 0, correctAnswers: 0 },
+        connectFour: { wins: 0, losses: 0, questionsAnswered: 0, correctAnswers: 0 },
+        geometryRunner: { highScore: 0, questionsAnswered: 0, correctAnswers: 0 }
+      };
+    }
+    
+    res.json(gameProgress[username]);
   }
-  
-  res.json(gameProgress[username]);
 });
 
 app.post('/api/questions', (req, res) => {
-  const { subject = 'Math' } = req.body;
+  const { subject = 'Math', gradeLevel = '3-4' } = req.body;
   
-  console.log(`Generating question for subject: ${subject}`);
+  console.log(`Generating question for subject: ${subject}, grade level: ${gradeLevel}`);
   
   const questions = QUESTIONS[subject] || QUESTIONS.Math;
   const randomIndex = Math.floor(Math.random() * questions.length);
@@ -167,5 +243,5 @@ app.post('/api/questions', (req, res) => {
 
 // Start server
 app.listen(port, () => {
-  console.log(`Server running on port ${port} WITHOUT MongoDB`);
+  console.log(`Server running on port ${port}`);
 }); 

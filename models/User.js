@@ -8,10 +8,34 @@ const userSchema = new mongoose.Schema({
     trim: true
   },
   gradeLevel: {
-    type: Number,
+    type: String,
     required: true,
-    min: 1,
-    max: 12
+    enum: ['1-2', '3-4', '5-6']
+  },
+  subject: {
+    type: String,
+    required: true,
+    enum: ['Math', 'Science', 'English', 'History', 'Geography'],
+    default: 'Math'
+  },
+  progress: {
+    ticTacToe: {
+      wins: { type: Number, default: 0 },
+      losses: { type: Number, default: 0 },
+      questionsAnswered: { type: Number, default: 0 },
+      correctAnswers: { type: Number, default: 0 }
+    },
+    connectFour: {
+      wins: { type: Number, default: 0 },
+      losses: { type: Number, default: 0 },
+      questionsAnswered: { type: Number, default: 0 },
+      correctAnswers: { type: Number, default: 0 }
+    },
+    geometryRunner: {
+      highScore: { type: Number, default: 0 },
+      questionsAnswered: { type: Number, default: 0 },
+      correctAnswers: { type: Number, default: 0 }
+    }
   },
   createdAt: {
     type: Date,

@@ -1,7 +1,7 @@
 {
-  "name": "ai-game-arcade",
+  "name": "learn_to_playaigamearcade",
   "version": "1.0.0",
-  "description": "Educational game platform for K-12 students with AI integration",
+  "description": "Educational gaming platform with AI integration",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -14,11 +14,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "mongoose": "^7.8.6",
-    "socket.io": "^4.7.2"
+    "mongoose": "^8.1.1"
   },
   "devDependencies": {
-    "concurrently": "^8.2.1",
-    "nodemon": "^3.0.1"
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.2"
   }
 }

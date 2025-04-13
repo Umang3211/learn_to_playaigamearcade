@@ -1,17 +1,8 @@
-# AI Game Arcade - Educational Platform
+# AI Game Arcade
 
-An interactive educational game platform for K-12 students that combines gaming with learning through AI-generated questions and feedback.
+An educational gaming platform that combines fun games with math learning.
 
-## Features
-
-- Multiple educational games (Tic Tac Toe, Connect 4, Geometry Dash-like runner)
-- AI-generated, age-appropriate questions before each move
-- AI opponent with simulated reasoning
-- Rest Mode with motivational messages and fun facts
-- Progress tracking and summaries for parents/teachers
-- Content safety and ethics checking
-
-## Setup
+## Setup Instructions
 
 1. Clone the repository
 2. Install dependencies:
@@ -21,47 +12,95 @@ An interactive educational game platform for K-12 students that combines gaming 
    npm install
    ```
 
-3. Create a `.env` file in the root directory with:
-   ```
-   PORT=5000
-   OPENAI_API_KEY=your_openai_api_key_here
-   MONGODB_URI=your_mongodb_uri_here
-   ```
+3. Set up environment variables:
+   - Copy `.env.example` to `.env`
+   - Fill in your API keys
+   - Never commit your `.env` file or share your API keys
 
-4. Start the development server:
+4. Start the development servers:
    ```bash
-   npm run dev:full
+   # Terminal 1 (Server)
+   node server.js
+
+   # Terminal 2 (Client)
+   cd client
+   npm start
    ```
 
-## Project Structure
+## Environment Variables
 
-- `server.js` - Backend server with API endpoints
-- `client/` - React frontend application
-- `models/` - Database models
-- `routes/` - API routes
-- `utils/` - Utility functions
+Create a `.env` file in the root directory with the following variables:
 
-## API Endpoints
+```
+PORT=5000
+GEMINI_API_KEY=your_gemini_api_key_here
+```
 
-- POST `/api/generate-question` - Generate educational questions
-- POST `/api/check-ethics` - Check content safety
-- POST `/api/generate-rest-mode` - Generate rest mode content
-- POST `/api/generate-summary` - Generate progress summaries
+### Getting API Keys
 
-## Technologies Used
+1. **Gemini API Key**:
+   - Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Create a new API key
+   - Keep this key secure and never share it publicly
 
-- React
-- Node.js
-- Express
-- Socket.io
-- OpenAI API
-- MongoDB
-- Material-UI
+## Security Guidelines
+
+### Environment Variables
+- Never commit your `.env` file
+- Use `.env.example` as a template
+- Keep API keys and secrets secure
+- Rotate API keys regularly
+
+### Code Security
+- Validate all user inputs
+- Use HTTPS in production
+- Implement proper error handling
+- Keep dependencies updated
+- Use environment variables for all sensitive data
+
+### Development Best Practices
+- Use strong passwords for all services
+- Enable 2FA where available
+- Regularly audit dependencies for vulnerabilities
+- Keep your development environment secure
+- Use secure coding practices
+
+### API Security
+- Implement rate limiting
+- Use proper authentication
+- Validate all API responses
+- Handle errors gracefully
+- Log security events
+
+## Features
+
+- Multiple educational games
+- Grade-appropriate math questions
+- Progress tracking
+- User authentication
+- Real-time feedback
+
+## Games
+
+1. **Tic Tac Toe**
+   - Classic game with math questions
+   - Answer correctly to place your piece
+
+2. **Connect Four**
+   - Strategic gameplay with math challenges
+   - Questions after each move
+
+3. **Geometry Runner**
+   - Endless runner with math obstacles
+   - Answer questions to continue
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request 
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License. 

@@ -7,19 +7,19 @@ const games = [
     id: 'tic-tac-toe',
     name: 'Tic Tac Toe',
     description: 'Classic game with AI opponent and educational questions',
-    path: '/games/tic-tac-toe'
+    path: '/tic-tac-toe'
   },
   {
     id: 'connect-four',
     name: 'Connect Four',
     description: 'Strategic game with AI opponent and educational challenges',
-    path: '/games/connect-four'
+    path: '/connect-four'
   },
   {
     id: 'geometry-runner',
     name: 'Geometry Runner',
     description: 'Fun running game with geometry-based obstacles',
-    path: '/games/geometry-runner'
+    path: '/geometry-runner'
   }
 ];
 

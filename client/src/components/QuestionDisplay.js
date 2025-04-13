@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 
 function QuestionDisplay({ question, options = {}, correctAnswer, onAnswer }) {
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [hasAnswered, setHasAnswered] = useState(false);
+
+  // Reset state when question changes or component remounts
+  useEffect(() => {
+    console.log('QuestionDisplay reset - question changed or remounted');
+    setSelectedAnswer('');
+    setHasAnswered(false);
+  }, [question]);
 
   // Log props for debugging
   console.log('QuestionDisplay props:', { question, options, correctAnswer });
@@ -12,6 +19,7 @@ function QuestionDisplay({ question, options = {}, correctAnswer, onAnswer }) {
     if (!selectedAnswer) return;
     
     const isCorrect = selectedAnswer === correctAnswer;
+    console.log(`User selected ${selectedAnswer}, correct answer is ${correctAnswer}, isCorrect: ${isCorrect}`);
     setHasAnswered(true);
     onAnswer?.(isCorrect);
   };
@@ -61,7 +69,7 @@ function QuestionDisplay({ question, options = {}, correctAnswer, onAnswer }) {
           sx={{ mt: 2 }}
           color={selectedAnswer === correctAnswer ? 'success.main' : 'error.main'}
         >
-          {selectedAnswer === correctAnswer ? 'Correct!' : 'Incorrect. Try again!'}
+          {selectedAnswer === correctAnswer ? 'Correct!' : 'Incorrect!'}
         </Typography>
       )}
     </Box>

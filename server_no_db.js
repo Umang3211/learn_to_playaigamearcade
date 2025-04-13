@@ -153,15 +153,20 @@ app.get('/api/users/:username/progress', (req, res) => {
 });
 
 app.post('/api/questions', (req, res) => {
-  const { subject = 'Math' } = req.body;
+  const { subject = 'Math', gradeLevel = '3-4' } = req.body;
   
-  console.log(`Generating question for subject: ${subject}`);
+  console.log(`Generating question for subject: ${subject}, grade level: ${gradeLevel}`);
   
   const questions = QUESTIONS[subject] || QUESTIONS.Math;
   const randomIndex = Math.floor(Math.random() * questions.length);
   const question = questions[randomIndex];
   
   console.log('Returning question:', question);
+  
+  // Add CORS headers to ensure client can access the response
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  
   res.json(question);
 });
 

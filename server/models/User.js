@@ -8,26 +8,22 @@ const userSchema = new mongoose.Schema({
   },
   gradeLevel: {
     type: Number,
-    required: true
+    required: true,
+    min: 1,
+    max: 12
   },
-  gameProgress: {
-    ticTacToe: {
-      wins: { type: Number, default: 0 },
-      losses: { type: Number, default: 0 },
-      questionsAnswered: { type: Number, default: 0 },
-      correctAnswers: { type: Number, default: 0 }
+  subject: {
+    type: String,
+    required: true,
+    enum: ['Math', 'Science', 'English', 'History', 'Geography']
+  },
+  progress: {
+    type: Map,
+    of: {
+      questionsAnswered: Number,
+      correctAnswers: Number
     },
-    connectFour: {
-      wins: { type: Number, default: 0 },
-      losses: { type: Number, default: 0 },
-      questionsAnswered: { type: Number, default: 0 },
-      correctAnswers: { type: Number, default: 0 }
-    },
-    geometryRunner: {
-      highScore: { type: Number, default: 0 },
-      questionsAnswered: { type: Number, default: 0 },
-      correctAnswers: { type: Number, default: 0 }
-    }
+    default: {}
   },
   createdAt: {
     type: Date,

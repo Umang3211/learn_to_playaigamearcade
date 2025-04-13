@@ -21,6 +21,7 @@ import ConnectFour from './games/ConnectFour';
 import GeometryRunner from './games/GeometryRunner';
 
 const socket = io('http://localhost:5000');
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 function GameContainer() {
   const location = useLocation();
@@ -62,7 +63,7 @@ function GameContainer() {
   const handleQuestionAnswer = async (answer) => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/check-ethics', {
+      const response = await fetch(`${API_URL}/api/check-ethics`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -107,7 +108,7 @@ function GameContainer() {
   const generateNewQuestion = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/generate-question', {
+      const response = await fetch(`${API_URL}/api/generate-question`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
